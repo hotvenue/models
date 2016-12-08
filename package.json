@@ -4,6 +4,9 @@
   "description": "Business models for the HotVenue app",
   "main": "index.js",
   "scripts": {
+    "eslint": "eslint .",
+    "check": "npm run eslint",
+    "pretest": "npm run check",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
