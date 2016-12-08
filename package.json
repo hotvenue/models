@@ -7,7 +7,7 @@
     "eslint": "eslint .",
     "check": "npm run eslint",
     "pretest": "npm run check",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "jest"
   },
   "repository": {
     "type": "git",
@@ -25,13 +25,17 @@
   },
   "homepage": "https://github.com/hotvenue/models#readme",
   "dependencies": {
+    "config": "^1.24.0",
     "sequelize": "^3.27.0"
   },
   "devDependencies": {
+    "babel-preset-airbnb": "^2.1.1",
     "eslint": "^3.11.1",
     "eslint-config-airbnb": "^13.0.0",
     "eslint-plugin-import": "^2.2.0",
     "eslint-plugin-jsx-a11y": "^2.2.3",
-    "eslint-plugin-react": "^6.8.0"
+    "eslint-plugin-react": "^6.8.0",
+    "jest": "^17.0.3",
+    "sqlite3": "^3.1.8"
   }
 }
