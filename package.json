@@ -20,5 +20,8 @@
   "bugs": {
     "url": "https://github.com/hotvenue/models/issues"
   },
-  "homepage": "https://github.com/hotvenue/models#readme"
+  "homepage": "https://github.com/hotvenue/models#readme",
+  "dependencies": {
+    "sequelize": "^3.27.0"
+  }
 }
