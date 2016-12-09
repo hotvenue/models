@@ -1,4 +1,4 @@
-import { User } from '../../index';
+import { sequelize, User } from '../../index';
 
 describe('User', () => {
   it('should be a valid model', () => {
@@ -32,5 +32,24 @@ describe('User', () => {
 
   it('should have a "telegramId" attribute', () => {
     expect(User.rawAttributes.telegramId).toBeDefined();
+  });
+
+  describe('Instance', () => {
+    const email = 'foo@bar.com';
+
+    beforeEach(() => sequelize
+      .sync({ force: true })
+      .then(() => User.create({ email })));
+
+    it('should find a user', () => User.findAll()
+      .then(users => expect(users).toHaveLength(1)));
+
+    it('should find the user', () => User.findOne({ where: { email } })
+      .then((user) => {
+        expect(user).toBeDefined();
+        expect(user).toBeInstanceOf(Object);
+        expect(user.email).toBeDefined();
+        expect(user.email).toBe(email);
+      }));
   });
 });
