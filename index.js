@@ -36,10 +36,12 @@ Object.keys(models)
   .forEach(modelName => models[modelName].associate(models));
 
 const User = models.user;
+const Device = models.device;
 
 export {
   Sequelize,
   sequelize,
 
   User,
+  Device,
 };
