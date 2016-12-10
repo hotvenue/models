@@ -51,5 +51,23 @@ describe('User', () => {
         expect(user.email).toBeDefined();
         expect(user.email).toBe(email);
       }));
+
+    it('should edit the user', () => User.findOne({ where: { email } })
+      .then((user) => {
+        user.telegramId = '5'; // eslint-disable-line no-param-reassign
+
+        return user.save();
+      })
+      .then(() => User.findOne({ where: { email } }))
+      .then((user) => {
+        expect(user).toBeDefined();
+        expect(user.email).toBe(email);
+        expect(user.telegramId).toBe('5');
+      }));
+
+    it('should delete the user', () => User.findOne({ where: { email } })
+      .then(user => user.destroy())
+      .then(() => User.findAll())
+      .then(users => expect(users).toHaveLength(0)));
   });
 });
