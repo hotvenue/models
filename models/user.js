@@ -24,7 +24,7 @@ export default function (sequelize, DataTypes) {
   }, {
     classMethods: {
       associate: (/* models */) => {
-        // user.hasMany(models.video);
+        // models.user.hasMany(models.video);
       },
     },
   });
