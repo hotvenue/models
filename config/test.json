@@ -2,5 +2,15 @@
   "database": {
     "dialect": "sqlite",
     "logging": false
+  },
+
+  "log": {
+    "level": "error"
+  },
+
+  "aws": {
+    "s3": {
+      "bucket": "hotvenue-test"
+    }
   }
 }

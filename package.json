@@ -26,6 +26,7 @@
   "homepage": "https://github.com/hotvenue/models#readme",
   "dependencies": {
     "config": "^1.24.0",
+    "hotvenue-utils": "git+https://github.com/hotvenue/utils.git",
     "sequelize": "^3.27.0"
   },
   "devDependencies": {
@@ -37,5 +38,10 @@
     "eslint-plugin-react": "^6.8.0",
     "jest": "^17.0.3",
     "sqlite3": "^3.1.8"
+  },
+  "jest": {
+    "transformIgnorePatterns": [
+      "/node_modules/(?!hotvenue-*)"
+    ]
   }
 }

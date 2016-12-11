@@ -2,8 +2,13 @@ import fs from 'fs';
 import path from 'path';
 import config from 'config';
 import Sequelize from 'sequelize';
+import log from 'hotvenue-utils/utils/log';
 
 const configDatabase = config.get('database');
+
+if (configDatabase.logging) {
+  configDatabase.logging = log.db.debug;
+}
 
 const sequelize = new Sequelize(
   configDatabase.database,
@@ -25,7 +30,7 @@ try {
     });
 } catch (err) {
   if (err.code === 'ENOENT') {
-    console.error('No "models" directory');
+    log.db.warn('No "models" directory');
   } else {
     throw new Error(err);
   }
