@@ -1,108 +1,110 @@
 import { sequelize, Location } from '../../index';
 
 describe('Location', () => {
-  it('should be a valid model', () => {
-    expect(Location).toBeDefined();
-    expect(Location.rawAttributes).toBeDefined();
-  });
+  describe('Class', () => {
+    it('should be a valid model', () => {
+      expect(Location).toBeDefined();
+      expect(Location.rawAttributes).toBeDefined();
+    });
 
-  it('should have date attributes', () => {
-    expect(Location.rawAttributes.createdAt).toBeDefined();
-    expect(Location.rawAttributes.updatedAt).toBeDefined();
+    it('should have date attributes', () => {
+      expect(Location.rawAttributes.createdAt).toBeDefined();
+      expect(Location.rawAttributes.updatedAt).toBeDefined();
 
-    // eslint-disable-next-line no-underscore-dangle
-    expect(Location._timestampAttributes.createdAt).toBe('createdAt');
-    // eslint-disable-next-line no-underscore-dangle
-    expect(Location._timestampAttributes.updatedAt).toBe('updatedAt');
-  });
+      // eslint-disable-next-line no-underscore-dangle
+      expect(Location._timestampAttributes.createdAt).toBe('createdAt');
+      // eslint-disable-next-line no-underscore-dangle
+      expect(Location._timestampAttributes.updatedAt).toBe('updatedAt');
+    });
 
-  it('should have a primary key', () => {
-    expect(Location.rawAttributes.id).toBeDefined();
-    expect(Location.rawAttributes.id.primaryKey).toBe(true);
-  });
+    it('should have a primary key', () => {
+      expect(Location.rawAttributes.id).toBeDefined();
+      expect(Location.rawAttributes.id.primaryKey).toBe(true);
+    });
 
-  it('should have a "name" attribute', () => {
-    expect(Location.rawAttributes.name).toBeDefined();
-    expect(Location.rawAttributes.name.allowNull).toBe(false);
-  });
+    it('should have a "name" attribute', () => {
+      expect(Location.rawAttributes.name).toBeDefined();
+      expect(Location.rawAttributes.name.allowNull).toBe(false);
+    });
 
-  it('should have a "hashtag" attribute', () => {
-    expect(Location.rawAttributes.hashtag).toBeDefined();
-  });
+    it('should have a "hashtag" attribute', () => {
+      expect(Location.rawAttributes.hashtag).toBeDefined();
+    });
 
-  it('should have a "email" attribute', () => {
-    expect(Location.rawAttributes.email).toBeDefined();
+    it('should have a "email" attribute', () => {
+      expect(Location.rawAttributes.email).toBeDefined();
 
-    expect(Location.rawAttributes.email.validate).toBeDefined();
-    expect(Location.rawAttributes.email.validate.isEmail).toBe(true);
-  });
+      expect(Location.rawAttributes.email.validate).toBeDefined();
+      expect(Location.rawAttributes.email.validate.isEmail).toBe(true);
+    });
 
-  it('should have a "geoLatitude" attribute', () => {
-    expect(Location.rawAttributes.geoLatitude).toBeDefined();
-    expect(Location.rawAttributes.geoLatitude.allowNull).toBe(false);
+    it('should have a "geoLatitude" attribute', () => {
+      expect(Location.rawAttributes.geoLatitude).toBeDefined();
+      expect(Location.rawAttributes.geoLatitude.allowNull).toBe(false);
 
-    expect(Location.rawAttributes.geoLatitude.validate).toBeDefined();
-    expect(Location.rawAttributes.geoLatitude.validate.min).toBe(-90);
-    expect(Location.rawAttributes.geoLatitude.validate.max).toBe(90);
-  });
+      expect(Location.rawAttributes.geoLatitude.validate).toBeDefined();
+      expect(Location.rawAttributes.geoLatitude.validate.min).toBe(-90);
+      expect(Location.rawAttributes.geoLatitude.validate.max).toBe(90);
+    });
 
-  it('should have a "geoLongitude" attribute', () => {
-    expect(Location.rawAttributes.geoLongitude).toBeDefined();
-    expect(Location.rawAttributes.geoLongitude.allowNull).toBe(false);
+    it('should have a "geoLongitude" attribute', () => {
+      expect(Location.rawAttributes.geoLongitude).toBeDefined();
+      expect(Location.rawAttributes.geoLongitude.allowNull).toBe(false);
 
-    expect(Location.rawAttributes.geoLongitude.validate).toBeDefined();
-    expect(Location.rawAttributes.geoLongitude.validate.min).toBe(-180);
-    expect(Location.rawAttributes.geoLongitude.validate.max).toBe(180);
-  });
+      expect(Location.rawAttributes.geoLongitude.validate).toBeDefined();
+      expect(Location.rawAttributes.geoLongitude.validate.min).toBe(-180);
+      expect(Location.rawAttributes.geoLongitude.validate.max).toBe(180);
+    });
 
-  it('should have a "frame" attribute', () => {
-    expect(Location.rawAttributes.frame).toBeDefined();
-    expect(Location.rawAttributes.frame.set).toBeDefined();
-  });
+    it('should have a "frame" attribute', () => {
+      expect(Location.rawAttributes.frame).toBeDefined();
+      expect(Location.rawAttributes.frame.set).toBeDefined();
+    });
 
-  it('should have a "frameThanks" attribute', () => {
-    expect(Location.rawAttributes.frameThanks).toBeDefined();
-    expect(Location.rawAttributes.frameThanks.set).toBeDefined();
-  });
+    it('should have a "frameThanks" attribute', () => {
+      expect(Location.rawAttributes.frameThanks).toBeDefined();
+      expect(Location.rawAttributes.frameThanks.set).toBeDefined();
+    });
 
-  it('should have a "watermark" attribute', () => {
-    expect(Location.rawAttributes.watermark).toBeDefined();
-    expect(Location.rawAttributes.watermark.set).toBeDefined();
-  });
+    it('should have a "watermark" attribute', () => {
+      expect(Location.rawAttributes.watermark).toBeDefined();
+      expect(Location.rawAttributes.watermark.set).toBeDefined();
+    });
 
-  it('should have a "urlFrameRelative" attribute', () => {
-    expect(Location.rawAttributes.urlFrameRelative).toBeDefined();
-    expect(Location.rawAttributes.urlFrameRelative.get).toBeDefined();
-  });
+    it('should have a "urlFrameRelative" attribute', () => {
+      expect(Location.rawAttributes.urlFrameRelative).toBeDefined();
+      expect(Location.rawAttributes.urlFrameRelative.get).toBeDefined();
+    });
 
-  it('should have a "urlFrame" attribute', () => {
-    expect(Location.rawAttributes.urlFrame).toBeDefined();
-    expect(Location.rawAttributes.urlFrame.get).toBeDefined();
-  });
+    it('should have a "urlFrame" attribute', () => {
+      expect(Location.rawAttributes.urlFrame).toBeDefined();
+      expect(Location.rawAttributes.urlFrame.get).toBeDefined();
+    });
 
-  it('should have a "urlFrameThanksRelative" attribute', () => {
-    expect(Location.rawAttributes.urlFrameThanksRelative).toBeDefined();
-    expect(Location.rawAttributes.urlFrameThanksRelative.get).toBeDefined();
-  });
+    it('should have a "urlFrameThanksRelative" attribute', () => {
+      expect(Location.rawAttributes.urlFrameThanksRelative).toBeDefined();
+      expect(Location.rawAttributes.urlFrameThanksRelative.get).toBeDefined();
+    });
 
-  it('should have a "urlFrameThanks" attribute', () => {
-    expect(Location.rawAttributes.urlFrameThanks).toBeDefined();
-    expect(Location.rawAttributes.urlFrameThanks.get).toBeDefined();
-  });
+    it('should have a "urlFrameThanks" attribute', () => {
+      expect(Location.rawAttributes.urlFrameThanks).toBeDefined();
+      expect(Location.rawAttributes.urlFrameThanks.get).toBeDefined();
+    });
 
-  it('should have a "urlWatermarkRelative" attribute', () => {
-    expect(Location.rawAttributes.urlWatermarkRelative).toBeDefined();
-    expect(Location.rawAttributes.urlWatermarkRelative.get).toBeDefined();
-  });
+    it('should have a "urlWatermarkRelative" attribute', () => {
+      expect(Location.rawAttributes.urlWatermarkRelative).toBeDefined();
+      expect(Location.rawAttributes.urlWatermarkRelative.get).toBeDefined();
+    });
 
-  it('should have a "urlWatermark" attribute', () => {
-    expect(Location.rawAttributes.urlWatermark).toBeDefined();
-    expect(Location.rawAttributes.urlWatermark.get).toBeDefined();
-  });
+    it('should have a "urlWatermark" attribute', () => {
+      expect(Location.rawAttributes.urlWatermark).toBeDefined();
+      expect(Location.rawAttributes.urlWatermark.get).toBeDefined();
+    });
 
-  it('should have a "checkboxes" attribute', () => {
-    expect(Location.rawAttributes.checkboxes).toBeDefined();
-    expect(Location.rawAttributes.checkboxes.get).toBeDefined();
+    it('should have a "checkboxes" attribute', () => {
+      expect(Location.rawAttributes.checkboxes).toBeDefined();
+      expect(Location.rawAttributes.checkboxes.get).toBeDefined();
+    });
   });
 
   describe('Instance', () => {
