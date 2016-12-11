@@ -29,7 +29,8 @@ try {
   if (err.code === 'ENOENT') {
     log.db.warn('No "models" directory');
   } else {
-    throw new Error(err);
+    console.error(err);
+    // throw new Error(err);
   }
 }
 
@@ -37,13 +38,15 @@ Object.keys(models)
   .filter(modelName => modelName.substr(0, 1) !== '_' && 'associate' in models[modelName])
   .forEach(modelName => models[modelName].associate(models));
 
-const User = models.user;
 const Device = models.device;
+const Location = models.location;
+const User = models.user;
 
 export {
   Sequelize,
   sequelize,
 
-  User,
   Device,
+  Location,
+  User,
 };

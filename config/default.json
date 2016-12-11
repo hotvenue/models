@@ -1,4 +1,61 @@
 {
+  "app": {
+    "extension": {
+      "frame": ".png",
+      "frameThanks": ".png",
+      "watermark": ".png"
+    },
+
+    "location": {
+      "frame": {
+        "sizes": {
+          "1x": [768, 1024],
+          "2x": [1536, 2048],
+          "pro": [2048, 2732]
+        }
+      },
+
+      "frameThanks": {
+        "sizes": {
+          "1x": [768, 1024],
+          "2x": [1536, 2048],
+          "pro": [2048, 2732]
+        }
+      },
+
+      "watermark": {
+        "sizes": {
+          "1x": [768, 1024],
+          "2x": [1536, 2048],
+          "pro": [2048, 2732],
+          "video1": [360, 360]
+        }
+      },
+
+      "checkboxes": {
+        "privateEvents": [{
+          "mandatory": true,
+          "name": "save",
+          "text": "We can save your video?"
+        }, {
+          "mandatory": false,
+          "name": "publish",
+          "text": "We can publish your video?"
+        }],
+
+        "publicEvents": [{
+          "mandatory": true,
+          "name": "save",
+          "text": "We can save your video?"
+        }, {
+          "mandatory": false,
+          "name": "publish",
+          "text": "We can publish your video?"
+        }]
+      }
+    }
+  },
+
   "database": {
     "logging": true
   },
@@ -11,7 +68,27 @@
     "region": "eu-west-1",
 
     "s3": {
-      "bucket": "hotvenue"
+      "bucket": "hotvenue",
+
+      "folder": {
+        "video": {
+          "tmp": "app/video/tmp-original",
+          "original": "app/video/original",
+          "preview": "app/video/preview",
+          "editedA": "app/video/edited-A"
+        },
+
+        "location": {
+          "frame": "app/location/frame",
+          "tmp-frame": "app/location/tmp-frame",
+
+          "frameThanks": "app/location/frame",
+          "tmp-frameThanks": "app/location/tmp-frame",
+
+          "watermark": "app/location/watermark",
+          "tmp-watermark": "app/location/tmp-watermark"
+        }
+      }
     }
   }
 }
