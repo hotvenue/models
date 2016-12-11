@@ -1,4 +1,4 @@
-import { Location } from '../../index';
+import { sequelize, Location } from '../../index';
 
 describe('Location', () => {
   it('should be a valid model', () => {
@@ -23,7 +23,7 @@ describe('Location', () => {
 
   it('should have a "name" attribute', () => {
     expect(Location.rawAttributes.name).toBeDefined();
-    console.log(Location.rawAttributes.name);
+    expect(Location.rawAttributes.name.allowNull).toBe(false);
   });
 
   it('should have a "hashtag" attribute', () => {
@@ -39,6 +39,225 @@ describe('Location', () => {
 
   it('should have a "geoLatitude" attribute', () => {
     expect(Location.rawAttributes.geoLatitude).toBeDefined();
-    console.log(Location.rawAttributes.geoLatitude);
+    expect(Location.rawAttributes.geoLatitude.allowNull).toBe(false);
+
+    expect(Location.rawAttributes.geoLatitude.validate).toBeDefined();
+    expect(Location.rawAttributes.geoLatitude.validate.min).toBe(-90);
+    expect(Location.rawAttributes.geoLatitude.validate.max).toBe(90);
+  });
+
+  it('should have a "geoLongitude" attribute', () => {
+    expect(Location.rawAttributes.geoLongitude).toBeDefined();
+    expect(Location.rawAttributes.geoLongitude.allowNull).toBe(false);
+
+    expect(Location.rawAttributes.geoLongitude.validate).toBeDefined();
+    expect(Location.rawAttributes.geoLongitude.validate.min).toBe(-180);
+    expect(Location.rawAttributes.geoLongitude.validate.max).toBe(180);
+  });
+
+  it('should have a "frame" attribute', () => {
+    expect(Location.rawAttributes.frame).toBeDefined();
+    expect(Location.rawAttributes.frame.set).toBeDefined();
+  });
+
+  it('should have a "frameThanks" attribute', () => {
+    expect(Location.rawAttributes.frameThanks).toBeDefined();
+    expect(Location.rawAttributes.frameThanks.set).toBeDefined();
+  });
+
+  it('should have a "watermark" attribute', () => {
+    expect(Location.rawAttributes.watermark).toBeDefined();
+    expect(Location.rawAttributes.watermark.set).toBeDefined();
+  });
+
+  it('should have a "urlFrameRelative" attribute', () => {
+    expect(Location.rawAttributes.urlFrameRelative).toBeDefined();
+    expect(Location.rawAttributes.urlFrameRelative.get).toBeDefined();
+  });
+
+  it('should have a "urlFrame" attribute', () => {
+    expect(Location.rawAttributes.urlFrame).toBeDefined();
+    expect(Location.rawAttributes.urlFrame.get).toBeDefined();
+  });
+
+  it('should have a "urlFrameThanksRelative" attribute', () => {
+    expect(Location.rawAttributes.urlFrameThanksRelative).toBeDefined();
+    expect(Location.rawAttributes.urlFrameThanksRelative.get).toBeDefined();
+  });
+
+  it('should have a "urlFrameThanks" attribute', () => {
+    expect(Location.rawAttributes.urlFrameThanks).toBeDefined();
+    expect(Location.rawAttributes.urlFrameThanks.get).toBeDefined();
+  });
+
+  it('should have a "urlWatermarkRelative" attribute', () => {
+    expect(Location.rawAttributes.urlWatermarkRelative).toBeDefined();
+    expect(Location.rawAttributes.urlWatermarkRelative.get).toBeDefined();
+  });
+
+  it('should have a "urlWatermark" attribute', () => {
+    expect(Location.rawAttributes.urlWatermark).toBeDefined();
+    expect(Location.rawAttributes.urlWatermark.get).toBeDefined();
+  });
+
+  it('should have a "checkboxes" attribute', () => {
+    expect(Location.rawAttributes.checkboxes).toBeDefined();
+    expect(Location.rawAttributes.checkboxes.get).toBeDefined();
+  });
+
+  describe('Instance', () => {
+    const name = 'Location A';
+    const geoLatitude = 3.66523;
+    const geoLongitude = -114.223236;
+
+    const hashtag = '#foobar';
+
+    beforeEach(() => sequelize
+      .sync({ force: true })
+      .then(() => Location.create({ name, geoLatitude, geoLongitude })));
+
+    describe('Basic', () => {
+      it('should find a location', () => Location.findAll()
+        .then(locations => expect(locations).toHaveLength(1)));
+
+      it('should find the location', () => Location.findOne({ where: { name } })
+        .then((location) => {
+          expect(location).toBeDefined();
+          expect(location).toBeInstanceOf(Object);
+
+          expect(location.name).toBeDefined();
+          expect(location.name).toBe(name);
+          expect(location.geoLatitude).toBeDefined();
+          expect(location.geoLatitude).toBe(geoLatitude);
+          expect(location.geoLongitude).toBeDefined();
+          expect(location.geoLongitude).toBe(geoLongitude);
+        }));
+
+      it('should edit the location', () => Location.findOne({ where: { name } })
+        .then((location) => {
+          location.hashtag = hashtag; // eslint-disable-line no-param-reassign
+
+          return location.save();
+        })
+        .then(() => Location.findOne({ where: { name } }))
+        .then((location) => {
+          expect(location).toBeDefined();
+          expect(location.name).toBe(name);
+          expect(location.geoLatitude).toBe(geoLatitude);
+          expect(location.geoLongitude).toBe(geoLongitude);
+          expect(location.hashtag).toBe(hashtag);
+        }));
+
+      it('should delete the location', () => Location.findOne({ where: { name } })
+        .then(location => location.destroy())
+        .then(() => Location.findAll())
+        .then(locations => expect(locations).toHaveLength(0)));
+    });
+
+    describe('Validation', () => {
+      it('should not allow a location without the name', () => Location.create({ geoLatitude, geoLongitude })
+        .then(() => { throw new Error('This test should throw an exception'); })
+        .catch((err) => {
+          expect(err).toBeDefined();
+          expect(err.name).toBe('SequelizeValidationError');
+          expect(err.errors[0].path).toBe('name');
+        }));
+
+      it('should not allow a location without the geoLatitude', () => Location.create({ name, geoLongitude })
+        .then(() => { throw new Error('This test should throw an exception'); })
+        .catch((err) => {
+          expect(err).toBeDefined();
+          expect(err.name).toBe('SequelizeValidationError');
+          expect(err.errors[0].path).toBe('geoLatitude');
+        }));
+
+      it('should not allow a location without the geoLongitude', () => Location.create({ name, geoLatitude })
+        .then(() => { throw new Error('This test should throw an exception'); })
+        .catch((err) => {
+          expect(err).toBeDefined();
+          expect(err.name).toBe('SequelizeValidationError');
+          expect(err.errors[0].path).toBe('geoLongitude');
+        }));
+
+      it('should not allow a non-email', () => Location.create({
+        name,
+        geoLatitude,
+        geoLongitude,
+        email: 'foooooo',
+      })
+        .then(() => { throw new Error('This test should throw an exception'); })
+        .catch((err) => {
+          expect(err).toBeDefined();
+          expect(err.name).toBe('SequelizeValidationError');
+          expect(err.errors[0].path).toBe('email');
+        }));
+
+      it('should not allow an "out of boundaries" geoLatitude (-)', () => Location.create({
+        name,
+        geoLatitude: -120.00923,
+        geoLongitude,
+      })
+        .then(() => { throw new Error('This test should throw an exception'); })
+        .catch((err) => {
+          expect(err).toBeDefined();
+          expect(err.name).toBe('SequelizeValidationError');
+          expect(err.errors[0].path).toBe('geoLatitude');
+        }));
+
+      it('should not allow an "out of boundaries" geoLatitude (+)', () => Location.create({
+        name,
+        geoLatitude: 120.00923,
+        geoLongitude,
+      })
+        .then(() => { throw new Error('This test should throw an exception'); })
+        .catch((err) => {
+          expect(err).toBeDefined();
+          expect(err.name).toBe('SequelizeValidationError');
+          expect(err.errors[0].path).toBe('geoLatitude');
+        }));
+
+      it('should not allow an "out of boundaries" geoLongitude (-)', () => Location.create({
+        name,
+        geoLatitude,
+        geoLongitude: -190.00923,
+      })
+        .then(() => { throw new Error('This test should throw an exception'); })
+        .catch((err) => {
+          expect(err).toBeDefined();
+          expect(err.name).toBe('SequelizeValidationError');
+          expect(err.errors[0].path).toBe('geoLongitude');
+        }));
+
+      it('should not allow an "out of boundaries" geoLongitude (+)', () => Location.create({
+        name,
+        geoLatitude,
+        geoLongitude: 190.00923,
+      })
+        .then(() => { throw new Error('This test should throw an exception'); })
+        .catch((err) => {
+          expect(err).toBeDefined();
+          expect(err.name).toBe('SequelizeValidationError');
+          expect(err.errors[0].path).toBe('geoLongitude');
+        }));
+    });
+
+    describe('Beautify', () => {
+      const email = 'FOO@BAR.com';
+
+      it('should rewrite the email into lower case', () => Location.create({
+        name,
+        geoLatitude,
+        geoLongitude,
+        email,
+      })
+        .then(location => expect(location.email).toBe(email.toLowerCase())));
+    });
+
+    describe('Urls', () => {
+      it('should populate "frame" urls', () => Location.findOne({ name })
+        .then((location) => {
+          expect(location.urlFrame).toBeEqual('');
+        }));
+    });
   });
 });
