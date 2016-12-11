@@ -256,7 +256,84 @@ describe('Location', () => {
     describe('Urls', () => {
       it('should populate "frame" urls', () => Location.findOne({ name })
         .then((location) => {
-          expect(location.urlFrame).toBeEqual('');
+          expect(location.urlFrame).toBeInstanceOf(Object);
+          expect(location.urlFrame['1x']).toBeDefined();
+          expect(location.urlFrame['1x']).toMatch(location.id);
+          expect(location.urlFrame['2x']).toBeDefined();
+          expect(location.urlFrame['2x']).toMatch(location.id);
+          expect(location.urlFrame.pro).toBeDefined();
+          expect(location.urlFrame.pro).toMatch(location.id);
+        }));
+
+      it('should populate "frame" relative urls', () => Location.findOne({ name })
+        .then((location) => {
+          expect(location.urlFrameRelative).toBeInstanceOf(Object);
+          expect(location.urlFrameRelative['1x']).toBeDefined();
+          expect(location.urlFrameRelative['1x']).toMatch(location.id);
+          expect(location.urlFrameRelative['2x']).toBeDefined();
+          expect(location.urlFrameRelative['2x']).toMatch(location.id);
+          expect(location.urlFrameRelative.pro).toBeDefined();
+          expect(location.urlFrameRelative.pro).toMatch(location.id);
+        }));
+
+      it('should populate "frameThanks" urls', () => Location.findOne({ name })
+        .then((location) => {
+          expect(location.urlFrameThanks).toBeInstanceOf(Object);
+          expect(location.urlFrameThanks['1x']).toBeDefined();
+          expect(location.urlFrameThanks['1x']).toMatch(location.id);
+          expect(location.urlFrameThanks['2x']).toBeDefined();
+          expect(location.urlFrameThanks['2x']).toMatch(location.id);
+          expect(location.urlFrameThanks.pro).toBeDefined();
+          expect(location.urlFrameThanks.pro).toMatch(location.id);
+        }));
+
+      it('should populate "frameThanks" relative urls', () => Location.findOne({ name })
+        .then((location) => {
+          expect(location.urlFrameThanksRelative).toBeInstanceOf(Object);
+          expect(location.urlFrameThanksRelative['1x']).toBeDefined();
+          expect(location.urlFrameThanksRelative['1x']).toMatch(location.id);
+          expect(location.urlFrameThanksRelative['2x']).toBeDefined();
+          expect(location.urlFrameThanksRelative['2x']).toMatch(location.id);
+          expect(location.urlFrameThanksRelative.pro).toBeDefined();
+          expect(location.urlFrameThanksRelative.pro).toMatch(location.id);
+        }));
+
+      it('should populate "watermark" urls', () => Location.findOne({ name })
+        .then((location) => {
+          expect(location.urlWatermark).toBeInstanceOf(Object);
+          expect(location.urlWatermark['1x']).toBeDefined();
+          expect(location.urlWatermark['1x']).toMatch(location.id);
+          expect(location.urlWatermark['2x']).toBeDefined();
+          expect(location.urlWatermark['2x']).toMatch(location.id);
+          expect(location.urlWatermark.pro).toBeDefined();
+          expect(location.urlWatermark.pro).toMatch(location.id);
+        }));
+
+      it('should populate "watermark" relative urls', () => Location.findOne({ name })
+        .then((location) => {
+          expect(location.urlWatermarkRelative).toBeInstanceOf(Object);
+          expect(location.urlWatermarkRelative['1x']).toBeDefined();
+          expect(location.urlWatermarkRelative['1x']).toMatch(location.id);
+          expect(location.urlWatermarkRelative['2x']).toBeDefined();
+          expect(location.urlWatermarkRelative['2x']).toMatch(location.id);
+          expect(location.urlWatermarkRelative.pro).toBeDefined();
+          expect(location.urlWatermarkRelative.pro).toMatch(location.id);
+        }));
+    });
+
+    describe('Checkboxes', () => {
+      it('should have the checkboxes', () => Location.findOne({ name })
+        .then((location) => {
+          expect(location.checkboxes).toBeDefined();
+          expect(location.checkboxes).toHaveLength(2);
+
+          expect(location.checkboxes[0].mandatory).toBeDefined();
+          expect(location.checkboxes[0].name).toBeDefined();
+          expect(location.checkboxes[0].text).toBeDefined();
+
+          expect(location.checkboxes[1].mandatory).toBeDefined();
+          expect(location.checkboxes[1].name).toBeDefined();
+          expect(location.checkboxes[1].text).toBeDefined();
         }));
     });
   });

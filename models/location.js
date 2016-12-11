@@ -29,11 +29,17 @@ function urlRelativeFactory(what, nameAdd) {
 
 function urlAbsoluteFactory(what) {
   return function urlAbsolute() {
-    return Object.keys(this[what]).map(size => [
-      `https://s3-${config.get('aws.region')}.amazonaws.com`,
-      config.get('aws.s3.bucket'),
-      this[what][size],
-    ].join('/'));
+    const urls = {};
+
+    Object.keys(this[what]).forEach((size) => {
+      urls[size] = [
+        `https://s3-${config.get('aws.region')}.amazonaws.com`,
+        config.get('aws.s3.bucket'),
+        this[what][size],
+      ].join('/');
+    });
+
+    return urls;
   };
 }
 
