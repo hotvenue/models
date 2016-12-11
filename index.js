@@ -29,8 +29,7 @@ try {
   if (err.code === 'ENOENT') {
     log.db.warn('No "models" directory');
   } else {
-    console.error(err);
-    // throw new Error(err);
+    throw new Error(err);
   }
 }
 
