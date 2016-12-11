@@ -4,17 +4,14 @@ import config from 'config';
 import Sequelize from 'sequelize';
 import log from 'hotvenue-utils/utils/log';
 
-const configDatabase = config.get('database');
-
-if (configDatabase.logging) {
-  configDatabase.logging = log.db.debug;
-}
-
 const sequelize = new Sequelize(
-  configDatabase.database,
-  configDatabase.username,
-  configDatabase.password,
-  configDatabase,
+  config.has('database.database') ? config.get('database.database') : null,
+  config.has('database.username') ? config.get('database.username') : null,
+  config.has('database.password') ? config.get('database.password') : null,
+  {
+    ...config.get('database'),
+    logging: config.get('database') ? log.db.debug : false,
+  },
 );
 
 const models = {};
