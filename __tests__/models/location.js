@@ -1,4 +1,4 @@
-import { sequelize, Location } from '../../index';
+import { sequelize, Location, Device } from '../../index';
 
 describe('Location', () => {
   describe('Class', () => {
@@ -337,6 +337,44 @@ describe('Location', () => {
           expect(location.checkboxes[1].name).toBeDefined();
           expect(location.checkboxes[1].text).toBeDefined();
         }));
+    });
+
+    describe('Associations', () => {
+      const nameA = 'Device A';
+      const nameB = 'Device B';
+
+      beforeEach(() => Promise.all([
+        Device.create({ name: nameA }),
+        Device.create({ name: nameB }),
+      ]));
+
+      it('should add the two devices to the location', () => Promise.all([
+        Location.findOne({ where: { name } }),
+        Device.findOne({ where: { name: nameA } }),
+      ])
+        .then(([location, device]) => location.addDevice(device))
+        .then(location => location.reload({ include: [{ model: Device }] }))
+        .then(location => expect(location.devices).toHaveLength(1))
+        .then(() => Device.findOne({ where: { name: nameA } }))
+        .then(device => expect(device.locationId).toBeDefined())
+        .then(() => Promise.all([
+          Location.findOne({ where: { name } }),
+          Device.findOne({ where: { name: nameB } }),
+        ]))
+        .then(([location, device]) => location.addDevice(device))
+        .then(location => location.reload({ include: [{ model: Device }] }))
+        .then(location => expect(location.devices).toHaveLength(2)));
+
+      it('should set the two devices to the location', () => Promise.all([
+        Location.findOne({ where: { name } }),
+        Device.findOne({ where: { name: nameA } }),
+        Device.findOne({ where: { name: nameB } }),
+      ])
+        .then(([location, deviceA, deviceB]) => location.setDevices([deviceA, deviceB]))
+        .then(location => location.reload({ include: [{ model: Device }] }))
+        .then(location => expect(location.devices).toHaveLength(2))
+        .then(() => Device.findOne({ where: { name: nameA } }))
+        .then(device => expect(device.locationId).toBeDefined()));
     });
   });
 });
