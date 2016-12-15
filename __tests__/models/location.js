@@ -1,3 +1,5 @@
+import path from 'path';
+
 import { sequelize, Location, Device } from '../../index';
 
 describe('Location', () => {
@@ -254,6 +256,28 @@ describe('Location', () => {
           args1[what] = 'foo';
 
           it('should throw an error if the file is not valid', () => Location.create(args1)
+            .then(() => { throw new Error('This test should throw an exception'); })
+            .catch((err) => {
+              expect(err).toBeDefined();
+              expect(err.name).toBe('SequelizeValidationError');
+              expect(err.errors[0].path).toBe(what);
+            }));
+
+          const args2 = { ...args };
+          args2[what] = path.join(__dirname, '..', 'assets', 'file.txt');
+
+          it('should throw an error if the file is not an image', () => Location.create(args2)
+            .then(() => { throw new Error('This test should throw an exception'); })
+            .catch((err) => {
+              expect(err).toBeDefined();
+              expect(err.name).toBe('SequelizeValidationError');
+              expect(err.errors[0].path).toBe(what);
+            }));
+
+          const args3 = { ...args };
+          args3[what] = path.join(__dirname, '..', 'assets', 'image.jpg');
+
+          it('should throw an error if the image is not the right type', () => Location.create(args2)
             .then(() => { throw new Error('This test should throw an exception'); })
             .catch((err) => {
               expect(err).toBeDefined();
