@@ -2,16 +2,29 @@ import path from 'path';
 import config from 'config';
 import { upload } from 'hotvenue-utils/utils/cloud';
 
-function imageFactory(what, nameAdd) {
-  return function set(filepath) {
-    const ext = path.extname(filepath);
+import { isFileType } from '../utils/validators';
 
-    if (ext !== config.get(`app.extension.${what}`)) {
-      throw new Error(`The "${what}" file provided is not a "${config.get(`app.extension.${what}`)}" image`);
+const thanksAdd = '-thanks';
+
+function isImageFactory(ext) {
+  return function isImage(filepath) {
+    isFileType(filepath, ext);
+  };
+}
+
+function imageHookFactory(location) {
+  return Promise.all(['frame', 'frameThanks', 'watermark'].map((what) => {
+    const nameAdd = what === 'frameThanks' ? thanksAdd : '';
+
+    if (location.changed(what)) {
+      const filepath = location[what];
+      const ext = path.extname(filepath);
+
+      return upload(filepath, `${config.get(`aws.s3.folder.location.tmp-${what}`)}/${this.id}${nameAdd || ''}${ext}`);
     }
 
-    upload(filepath, `${config.get(`aws.s3.folder.location.tmp-${what}`)}/${this.id}${nameAdd || ''}${ext}`);
-  };
+    return true;
+  }));
 }
 
 function urlRelativeFactory(what, nameAdd) {
@@ -44,8 +57,6 @@ function urlAbsoluteFactory(what) {
 }
 
 export default function (sequelize, DataTypes) {
-  const thanksAdd = '-thanks';
-
   return sequelize.define('location', {
     id: {
       type: DataTypes.UUID,
@@ -55,17 +66,23 @@ export default function (sequelize, DataTypes) {
 
     frame: {
       type: DataTypes.VIRTUAL,
-      set: imageFactory.call(this, 'frame'),
+      validate: {
+        isValidImage: isImageFactory(config.get('app.extension.frame')),
+      },
     },
 
     frameThanks: {
       type: DataTypes.VIRTUAL,
-      set: imageFactory.call(this, 'frameThanks', thanksAdd),
+      validate: {
+        isValidImage: isImageFactory(config.get('app.extension.frameThanks')),
+      },
     },
 
     watermark: {
       type: DataTypes.VIRTUAL,
-      set: imageFactory.call(this, 'watermark'),
+      validate: {
+        isValidImage: isImageFactory(config.get('app.extension.watermark')),
+      },
     },
 
     name: {
@@ -141,6 +158,11 @@ export default function (sequelize, DataTypes) {
         models.location.hasMany(models.device);
         // models.location.hasMany(models.video);
       },
+    },
+
+    hooks: {
+      beforeUpdate: imageHookFactory,
+      beforeSave: imageHookFactory,
     },
   });
 }

@@ -58,17 +58,17 @@ describe('Location', () => {
 
     it('should have a "frame" attribute', () => {
       expect(Location.rawAttributes.frame).toBeDefined();
-      expect(Location.rawAttributes.frame.set).toBeDefined();
+      expect(Location.rawAttributes.frame.validate).toBeDefined();
     });
 
     it('should have a "frameThanks" attribute', () => {
       expect(Location.rawAttributes.frameThanks).toBeDefined();
-      expect(Location.rawAttributes.frameThanks.set).toBeDefined();
+      expect(Location.rawAttributes.frameThanks.validate).toBeDefined();
     });
 
     it('should have a "watermark" attribute', () => {
       expect(Location.rawAttributes.watermark).toBeDefined();
-      expect(Location.rawAttributes.watermark.set).toBeDefined();
+      expect(Location.rawAttributes.watermark.validate).toBeDefined();
     });
 
     it('should have a "urlFrameRelative" attribute', () => {
@@ -241,6 +241,27 @@ describe('Location', () => {
           expect(err.name).toBe('SequelizeValidationError');
           expect(err.errors[0].path).toBe('geoLongitude');
         }));
+
+      ['frame', 'frameThanks', 'watermark'].forEach((what) => {
+        describe(`Image "${what}"`, () => {
+          const args = {
+            name,
+            geoLatitude,
+            geoLongitude,
+          };
+
+          const args1 = { ...args };
+          args1[what] = 'foo';
+
+          it('should throw an error if the file is not valid', () => Location.create(args1)
+            .then(() => { throw new Error('This test should throw an exception'); })
+            .catch((err) => {
+              expect(err).toBeDefined();
+              expect(err.name).toBe('SequelizeValidationError');
+              expect(err.errors[0].path).toBe(what);
+            }));
+        });
+      });
     });
 
     describe('Beautify', () => {
@@ -375,6 +396,11 @@ describe('Location', () => {
         .then(location => expect(location.devices).toHaveLength(2))
         .then(() => Device.findOne({ where: { name: nameA } }))
         .then(device => expect(device.locationId).toBeDefined()));
+    });
+
+    describe('Files', () => {
+      it('should change something', () => Location.findOne({ where: { name } })
+        .then(() => {}));
     });
   });
 });
