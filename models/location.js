@@ -20,7 +20,7 @@ function imageHookFactory(location) {
       const filepath = location[what];
       const ext = path.extname(filepath);
 
-      return upload(filepath, `${config.get(`aws.s3.folder.location.tmp-${what}`)}/${this.id}${nameAdd || ''}${ext}`);
+      return upload(filepath, `${config.get(`aws.s3.folder.location.tmp-${what}`)}/${location.id}${nameAdd || ''}${ext}`);
     }
 
     return true;
@@ -30,7 +30,9 @@ function imageHookFactory(location) {
 function urlRelativeFactory(what, nameAdd) {
   return function urlRelative() {
     const file = `${config.get(`aws.s3.folder.location.${what}`)}/${this.id}${nameAdd || ''}`;
-    const files = {};
+    const files = {
+      original: `${file}${config.get(`app.extension.${what}`)}`,
+    };
 
     Object.keys(config.get(`app.location.${what}.sizes`)).forEach((key) => {
       files[key] = `${file}@${key}${config.get(`app.extension.${what}`)}`;
@@ -161,8 +163,9 @@ export default function (sequelize, DataTypes) {
     },
 
     hooks: {
-      beforeUpdate: imageHookFactory,
-      beforeSave: imageHookFactory,
+      afterCreate: imageHookFactory,
+      afterUpdate: imageHookFactory,
+      afterSave: imageHookFactory,
     },
   });
 }

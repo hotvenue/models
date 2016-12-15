@@ -1,4 +1,6 @@
 import path from 'path';
+import config from 'config';
+import { check, destroy } from 'hotvenue-utils/utils/cloud';
 
 import { sequelize, Location, Device } from '../../index';
 
@@ -310,6 +312,8 @@ describe('Location', () => {
           expect(location.urlFrame['2x']).toMatch(location.id);
           expect(location.urlFrame.pro).toBeDefined();
           expect(location.urlFrame.pro).toMatch(location.id);
+          expect(location.urlFrame.original).toBeDefined();
+          expect(location.urlFrame.original).toMatch(location.id);
         }));
 
       it('should populate "frame" relative urls', () => Location.findOne({ name })
@@ -321,6 +325,8 @@ describe('Location', () => {
           expect(location.urlFrameRelative['2x']).toMatch(location.id);
           expect(location.urlFrameRelative.pro).toBeDefined();
           expect(location.urlFrameRelative.pro).toMatch(location.id);
+          expect(location.urlFrameRelative.original).toBeDefined();
+          expect(location.urlFrameRelative.original).toMatch(location.id);
         }));
 
       it('should populate "frameThanks" urls', () => Location.findOne({ name })
@@ -332,6 +338,8 @@ describe('Location', () => {
           expect(location.urlFrameThanks['2x']).toMatch(location.id);
           expect(location.urlFrameThanks.pro).toBeDefined();
           expect(location.urlFrameThanks.pro).toMatch(location.id);
+          expect(location.urlFrameThanks.original).toBeDefined();
+          expect(location.urlFrameThanks.original).toMatch(location.id);
         }));
 
       it('should populate "frameThanks" relative urls', () => Location.findOne({ name })
@@ -343,6 +351,8 @@ describe('Location', () => {
           expect(location.urlFrameThanksRelative['2x']).toMatch(location.id);
           expect(location.urlFrameThanksRelative.pro).toBeDefined();
           expect(location.urlFrameThanksRelative.pro).toMatch(location.id);
+          expect(location.urlFrameThanksRelative.original).toBeDefined();
+          expect(location.urlFrameThanksRelative.original).toMatch(location.id);
         }));
 
       it('should populate "watermark" urls', () => Location.findOne({ name })
@@ -354,6 +364,8 @@ describe('Location', () => {
           expect(location.urlWatermark['2x']).toMatch(location.id);
           expect(location.urlWatermark.pro).toBeDefined();
           expect(location.urlWatermark.pro).toMatch(location.id);
+          expect(location.urlWatermark.original).toBeDefined();
+          expect(location.urlWatermark.original).toMatch(location.id);
         }));
 
       it('should populate "watermark" relative urls', () => Location.findOne({ name })
@@ -365,6 +377,8 @@ describe('Location', () => {
           expect(location.urlWatermarkRelative['2x']).toMatch(location.id);
           expect(location.urlWatermarkRelative.pro).toBeDefined();
           expect(location.urlWatermarkRelative.pro).toMatch(location.id);
+          expect(location.urlWatermarkRelative.original).toBeDefined();
+          expect(location.urlWatermarkRelative.original).toMatch(location.id);
         }));
     });
 
@@ -423,8 +437,38 @@ describe('Location', () => {
     });
 
     describe('Files', () => {
-      it('should change something', () => Location.findOne({ where: { name } })
-        .then(() => {}));
+      const image = path.join(__dirname, '..', 'assets', 'image.png');
+
+      const args = { name, geoLatitude, geoLongitude };
+
+      function capitalize(string) {
+        return string.charAt(0).toUpperCase() + string.slice(1);
+      }
+
+      ['frame', 'frameThanks', 'watermark'].forEach((what) => {
+        const args1 = { ...args };
+        args1[what] = image;
+
+        const urlKey = `url${capitalize(what)}Relative`;
+
+        it(`should upload the ${what} image`, () => Location.create(args1)
+          .then((location) => {
+            const img = location[urlKey].original
+              .replace(config.get(`aws.s3.folder.location.${what}`), config.get(`aws.s3.folder.location.tmp-${what}`));
+
+            return check(img)
+              .then((meta) => {
+                expect(meta).toBeDefined();
+                expect(meta).toBeInstanceOf(Object);
+                expect(meta.AcceptRanges).toBeDefined();
+                expect(meta.LastModified).toBeDefined();
+                expect(parseInt(meta.ContentLength, 10)).toBeGreaterThan(0);
+                expect(meta.ETag).toBeDefined();
+                expect(meta.ContentType).toBe('application/octet-stream');
+              })
+              .then(() => destroy(img));
+          }));
+      });
     });
   });
 });
