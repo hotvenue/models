@@ -23,8 +23,8 @@ export default function (sequelize, DataTypes) {
     },
   }, {
     classMethods: {
-      associate: (/* models */) => {
-        // models.user.hasMany(models.video);
+      associate: (models) => {
+        models.user.hasMany(models.video);
       },
     },
   });

@@ -1,4 +1,4 @@
-import { sequelize, User } from '../../index';
+import { sequelize, User, Video } from '../../index';
 
 describe('User', () => {
   describe('Class', () => {
@@ -98,6 +98,56 @@ describe('User', () => {
           expect(err.name).toBe('SequelizeUniqueConstraintError');
           expect(err.errors[0].path).toBe('email');
         }));
+    });
+
+    describe('Associations', () => {
+      const hash1 = '1234';
+      const hash2 = '5678';
+
+      beforeEach(() => Promise.all([
+        Video.create({ hash: hash1 }),
+        Video.create({ hash: hash2 }),
+      ]));
+
+      it('should have an associated "Video"', () => Promise.all([
+        User.findOne({ where: { email } }),
+        Video.findAll(),
+      ])
+        .then(([user, videos]) => user.setVideos(videos))
+        .then(() => User.findOne({ where: { email }, include: [{ model: Video }] }))
+        .then(user => expect(user.videos).toHaveLength(2))
+        .then(() => User.findOne({ where: { email } }))
+        .then(user => user.setVideos())
+        .then(() => User.findOne({ where: { email }, include: [{ model: Video }] }))
+        .then(user => expect(user.videos).toHaveLength(0))
+        .then(() => Promise.all([
+          User.findOne({ where: { email } }),
+          Video.findOne({ where: { hash: hash1 } }),
+        ]))
+        .then(([user, video]) => user.addVideo(video))
+        .then(() => User.findOne({ where: { email }, include: [{ model: Video }] }))
+        .then(user => expect(user.videos).toHaveLength(1))
+        .then(() => Promise.all([
+          User.findOne({ where: { email } }),
+          Video.findOne({ where: { hash: hash1 } }),
+        ]))
+        .then(([user, video]) => user.addVideo(video))
+        .then(() => User.findOne({ where: { email }, include: [{ model: Video }] }))
+        .then(user => expect(user.videos).toHaveLength(1))
+        .then(() => Promise.all([
+          User.findOne({ where: { email } }),
+          Video.findOne({ where: { hash: hash2 } }),
+        ]))
+        .then(([user, video]) => user.addVideo(video))
+        .then(() => User.findOne({ where: { email }, include: [{ model: Video }] }))
+        .then(user => expect(user.videos).toHaveLength(2))
+        .then(() => Promise.all([
+          User.findOne({ where: { email } }),
+          Video.findOne({ where: { hash: hash2 } }),
+        ]))
+        .then(([user, video]) => user.removeVideo(video))
+        .then(() => User.findOne({ where: { email }, include: [{ model: Video }] }))
+        .then(user => expect(user.videos).toHaveLength(1)));
     });
   });
 });

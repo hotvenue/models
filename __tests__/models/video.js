@@ -1,4 +1,4 @@
-import { sequelize, Video } from '../../index';
+import { sequelize, User, Video } from '../../index';
 
 describe('Video', () => {
   describe('Class', () => {
@@ -47,6 +47,13 @@ describe('Video', () => {
       expect(Video.rawAttributes.privacy).toBeDefined();
       expect(Video.rawAttributes.privacy.get).toBeDefined();
       expect(Video.rawAttributes.privacy.set).toBeDefined();
+    });
+
+    it('should have a "userId" attribute', () => {
+      expect(Video.rawAttributes.userId).toBeDefined();
+      expect(Video.rawAttributes.userId.references).toBeDefined();
+      expect(Video.rawAttributes.userId.references.model).toBe('users');
+      expect(Video.rawAttributes.userId.references.key).toBe('id');
     });
   });
 
@@ -107,6 +114,22 @@ describe('Video', () => {
         .then(videos => expect(videos).toHaveLength(0)));
     });
 
-    describe('Validation', () => {});
+    describe('Associations', () => {
+      const email = 'foo@bar.com';
+
+      beforeEach(() => Promise.all([
+        User.create({ email }),
+      ]));
+
+      it('should have an associated "User"', () => Promise.all([
+        Video.findOne({ where: { hash } }),
+        User.findOne({ where: { email } }),
+      ])
+        .then(([video, user]) => video.setUser(user))
+        .then(video => expect(video.userId).toBeDefined())
+        .then(() => Video.findOne({ where: { hash } }))
+        .then(video => video.setUser())
+        .then(video => expect(video.userId).not.toBeDefined()));
+    });
   });
 });

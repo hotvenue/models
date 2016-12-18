@@ -50,8 +50,9 @@ export default function (sequelize, DataTypes) {
   }, {
     classMethods: {
       associate(models) {
-        models.device.belongsTo(models.location);
-        // models.device.hasMany(models.video);
+        models.video.belongsTo(models.user);
+        // models.video.belongsTo(models.device);
+        // models.video.belongsTo(models.location);
       },
     },
   });
