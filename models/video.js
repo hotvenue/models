@@ -1,7 +1,8 @@
 import moment from 'moment';
 import config from 'config';
 
-import { urlAbsoluteFactory, urlRelativeFactory } from '../utils/models';
+import { urlAbsoluteFactory, urlRelativeFactory, fileHookFactory } from '../utils/models';
+import { isFileTypeFactory } from '../utils/validators';
 
 export default function (sequelize, DataTypes) {
   return sequelize.define('video', {
@@ -9,6 +10,13 @@ export default function (sequelize, DataTypes) {
       type: DataTypes.UUID,
       primaryKey: true,
       defaultValue: DataTypes.UUIDV4,
+    },
+
+    file: {
+      type: DataTypes.VIRTUAL,
+      validate: {
+        isValidImage: isFileTypeFactory(config.get('app.extension.video.upload')),
+      },
     },
 
     name: {
@@ -86,6 +94,12 @@ export default function (sequelize, DataTypes) {
         models.video.belongsTo(models.device);
         models.video.belongsTo(models.location);
       },
+    },
+
+    hooks: {
+      afterCreate: fileHookFactory('video', ['file']),
+      afterUpdate: fileHookFactory('video', ['file']),
+      afterSave: fileHookFactory('video', ['file']),
     },
   });
 }

@@ -2,6 +2,7 @@
   "app": {
     "extension": {
       "video": {
+        "upload": [".mp4", ".mov", ".avi", ".m4v"],
         "original": ".mp4",
         "editedA": ".mp4",
         "preview": ".jpg"
@@ -79,7 +80,7 @@
 
       "folder": {
         "video": {
-          "tmp": "app/video/tmp-original",
+          "tmp-file": "app/video/tmp-original",
 
           "original": "app/video/original",
           "preview": "app/video/preview",

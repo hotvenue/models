@@ -1,3 +1,7 @@
+import path from 'path';
+import config from 'config';
+import { check, destroy } from 'hotvenue-utils/utils/cloud';
+
 import { sequelize, Device, Location, User, Video } from '../../index';
 
 describe('Video', () => {
@@ -237,6 +241,61 @@ describe('Video', () => {
           expect(video.urlPreviewRelative).toBeDefined();
           expect(video.urlPreviewRelative).toMatch(video.id);
         }));
+    });
+
+    describe('Validations', () => {
+      const args = { hash };
+
+      const args1 = { ...args };
+      args1.file = 'foo';
+
+      it('should throw an error if the file is not valid', () => Video.create(args1)
+        .then(() => { throw new Error('This test should throw an exception'); })
+        .catch((err) => {
+          expect(err).toBeDefined();
+          expect(err.name).toBe('SequelizeValidationError');
+          expect(err.errors[0].path).toBe('file');
+        }));
+
+      const args2 = { ...args };
+      args2.file = path.join(__dirname, '..', 'assets', 'file.txt');
+
+      it('should throw an error if the file is not a video', () => Video.create(args2)
+        .then(() => { throw new Error('This test should throw an exception'); })
+        .catch((err) => {
+          expect(err).toBeDefined();
+          expect(err.name).toBe('SequelizeValidationError');
+          expect(err.errors[0].path).toBe('file');
+        }));
+    });
+
+    describe('Files', () => {
+      const folder = path.join(__dirname, '..', 'assets');
+      const args = { hash };
+
+      config.get('app.extension.video.upload').forEach((ext) => {
+        const args1 = { ...args };
+        args1.file = path.join(folder, `video${ext}`);
+
+        it(`should upload the video "${ext}"`, () => Video.create(args1)
+          .then((video) => {
+            const videoFile = video.urlOriginalRelative
+              .replace(config.get('aws.s3.folder.video.original'), config.get('aws.s3.folder.video.tmp-file'))
+              .replace(config.get('app.extension.video.original'), ext);
+
+            return check(videoFile)
+              .then((meta) => {
+                expect(meta).toBeDefined();
+                expect(meta).toBeInstanceOf(Object);
+                expect(meta.AcceptRanges).toBeDefined();
+                expect(meta.LastModified).toBeDefined();
+                expect(parseInt(meta.ContentLength, 10)).toBeGreaterThan(0);
+                expect(meta.ETag).toBeDefined();
+                expect(meta.ContentType).toBe('application/octet-stream');
+              })
+              .then(() => destroy(videoFile));
+          }));
+      });
     });
   });
 });

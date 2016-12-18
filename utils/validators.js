@@ -20,8 +20,14 @@ export function isFileType(filepath, ext) {
 
   const fileext = path.extname(filepath);
 
-  if (fileext !== ext) {
-    throw new Error(`The file provided is not a "${ext}" file`);
+  if (typeof ext === 'string') {
+    if (fileext !== ext) {
+      throw new Error(`The file provided is not a "${ext}" file`);
+    }
+  } else if (Array.isArray(ext)) {
+    if (ext.every(e => fileext !== e)) {
+      throw new Error(`The file provided is not a "${ext.join('|')}" file`);
+    }
   }
 }
 
