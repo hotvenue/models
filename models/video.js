@@ -1,6 +1,8 @@
 import moment from 'moment';
 import config from 'config';
 
+import { urlAbsoluteFactory, urlRelativeFactory } from '../utils/models';
+
 export default function (sequelize, DataTypes) {
   return sequelize.define('video', {
     id: {
@@ -46,6 +48,36 @@ export default function (sequelize, DataTypes) {
       get() {
         return JSON.parse(this.getDataValue('privacy'));
       },
+    },
+
+    urlOriginalRelative: {
+      type: DataTypes.VIRTUAL,
+      get: urlRelativeFactory.call(this, 'video.original'),
+    },
+
+    urlOriginal: {
+      type: DataTypes.VIRTUAL,
+      get: urlAbsoluteFactory.call(this, 'urlOriginalRelative'),
+    },
+
+    urlEditedARelative: {
+      type: DataTypes.VIRTUAL,
+      get: urlRelativeFactory.call(this, 'video.editedA'),
+    },
+
+    urlEditedA: {
+      type: DataTypes.VIRTUAL,
+      get: urlAbsoluteFactory.call(this, 'urlEditedARelative'),
+    },
+
+    urlPreviewRelative: {
+      type: DataTypes.VIRTUAL,
+      get: urlRelativeFactory.call(this, 'video.preview'),
+    },
+
+    urlPreview: {
+      type: DataTypes.VIRTUAL,
+      get: urlAbsoluteFactory.call(this, 'urlPreviewRelative'),
     },
   }, {
     classMethods: {

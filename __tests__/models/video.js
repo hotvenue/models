@@ -69,6 +69,36 @@ describe('Video', () => {
       expect(Video.rawAttributes.locationId.references.model).toBe('locations');
       expect(Video.rawAttributes.locationId.references.key).toBe('id');
     });
+
+    it('should have a "urlOriginalRelative" attribute', () => {
+      expect(Video.rawAttributes.urlOriginalRelative).toBeDefined();
+      expect(Video.rawAttributes.urlOriginalRelative.get).toBeDefined();
+    });
+
+    it('should have a "urlOriginal" attribute', () => {
+      expect(Video.rawAttributes.urlOriginal).toBeDefined();
+      expect(Video.rawAttributes.urlOriginal.get).toBeDefined();
+    });
+
+    it('should have a "urlEditedARelative" attribute', () => {
+      expect(Video.rawAttributes.urlEditedARelative).toBeDefined();
+      expect(Video.rawAttributes.urlEditedARelative.get).toBeDefined();
+    });
+
+    it('should have a "urlEditedA" attribute', () => {
+      expect(Video.rawAttributes.urlEditedA).toBeDefined();
+      expect(Video.rawAttributes.urlEditedA.get).toBeDefined();
+    });
+
+    it('should have a "urlPreviewRelative" attribute', () => {
+      expect(Video.rawAttributes.urlPreviewRelative).toBeDefined();
+      expect(Video.rawAttributes.urlPreviewRelative.get).toBeDefined();
+    });
+
+    it('should have a "urlPreview" attribute', () => {
+      expect(Video.rawAttributes.urlPreview).toBeDefined();
+      expect(Video.rawAttributes.urlPreview.get).toBeDefined();
+    });
   });
 
   describe('Instance', () => {
@@ -169,6 +199,44 @@ describe('Video', () => {
         .then(() => Video.findOne({ where: { hash } }))
         .then(video => video.setLocation())
         .then(video => expect(video.locationId).not.toBeDefined()));
+    });
+
+    describe('Urls', () => {
+      it('should populate "original" urls', () => Video.findOne({ hash })
+        .then((video) => {
+          expect(video.urlOriginal).toBeDefined();
+          expect(video.urlOriginal).toMatch(video.id);
+        }));
+
+      it('should populate "original" relative urls', () => Video.findOne({ hash })
+        .then((video) => {
+          expect(video.urlOriginalRelative).toBeDefined();
+          expect(video.urlOriginalRelative).toMatch(video.id);
+        }));
+
+      it('should populate "editedA" urls', () => Video.findOne({ hash })
+        .then((video) => {
+          expect(video.urlEditedA).toBeDefined();
+          expect(video.urlEditedA).toMatch(video.id);
+        }));
+
+      it('should populate "editedA" relative urls', () => Video.findOne({ hash })
+        .then((video) => {
+          expect(video.urlEditedARelative).toBeDefined();
+          expect(video.urlEditedARelative).toMatch(video.id);
+        }));
+
+      it('should populate "preview" urls', () => Video.findOne({ hash })
+        .then((video) => {
+          expect(video.urlPreview).toBeDefined();
+          expect(video.urlPreview).toMatch(video.id);
+        }));
+
+      it('should populate "preview" relative urls', () => Video.findOne({ hash })
+        .then((video) => {
+          expect(video.urlPreviewRelative).toBeDefined();
+          expect(video.urlPreviewRelative).toMatch(video.id);
+        }));
     });
   });
 });
