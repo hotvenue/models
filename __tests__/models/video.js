@@ -1,4 +1,4 @@
-import { sequelize, User, Video } from '../../index';
+import { sequelize, Device, User, Video } from '../../index';
 
 describe('Video', () => {
   describe('Class', () => {
@@ -54,6 +54,13 @@ describe('Video', () => {
       expect(Video.rawAttributes.userId.references).toBeDefined();
       expect(Video.rawAttributes.userId.references.model).toBe('users');
       expect(Video.rawAttributes.userId.references.key).toBe('id');
+    });
+
+    it('should have a "deviceId" attribute', () => {
+      expect(Video.rawAttributes.deviceId).toBeDefined();
+      expect(Video.rawAttributes.deviceId.references).toBeDefined();
+      expect(Video.rawAttributes.deviceId.references.model).toBe('devices');
+      expect(Video.rawAttributes.deviceId.references.key).toBe('id');
     });
   });
 
@@ -116,9 +123,11 @@ describe('Video', () => {
 
     describe('Associations', () => {
       const email = 'foo@bar.com';
+      const name = 'Device A';
 
       beforeEach(() => Promise.all([
         User.create({ email }),
+        Device.create({ name }),
       ]));
 
       it('should have an associated "User"', () => Promise.all([
@@ -130,6 +139,16 @@ describe('Video', () => {
         .then(() => Video.findOne({ where: { hash } }))
         .then(video => video.setUser())
         .then(video => expect(video.userId).not.toBeDefined()));
+
+      it('should have an associated "Device"', () => Promise.all([
+        Video.findOne({ where: { hash } }),
+        Device.findOne({ where: { name } }),
+      ])
+        .then(([video, device]) => video.setDevice(device))
+        .then(video => expect(video.deviceId).toBeDefined())
+        .then(() => Video.findOne({ where: { hash } }))
+        .then(video => video.setDevice())
+        .then(video => expect(video.deviceId).not.toBeDefined()));
     });
   });
 });

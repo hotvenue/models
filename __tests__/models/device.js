@@ -1,4 +1,4 @@
-import { sequelize, Device, Location } from '../../index';
+import { sequelize, Device, Location, Video } from '../../index';
 
 describe('Device', () => {
   describe('Class', () => {
@@ -80,7 +80,14 @@ describe('Device', () => {
       const geoLatitude = 3.66523;
       const geoLongitude = -114.223236;
 
-      beforeEach(() => Location.create({ name, geoLatitude, geoLongitude }));
+      const hash1 = '1234';
+      const hash2 = '5678';
+
+      beforeEach(() => Promise.all([
+        Location.create({ name, geoLatitude, geoLongitude }),
+        Video.create({ hash: hash1 }),
+        Video.create({ hash: hash2 }),
+      ]));
 
       it('should set the location of the device', () => Promise.all([
         Location.findOne({ where: { name } }),
@@ -133,6 +140,46 @@ describe('Device', () => {
         .then(() => Device.findOne({ where: { name } }))
         .then(device => device.setLocation())
         .then(device => expect(device.locationId).not.toBeDefined()));
+
+      it('should have an associated "Video"', () => Promise.all([
+        Device.findOne({ where: { name } }),
+        Video.findAll(),
+      ])
+        .then(([device, videos]) => device.setVideos(videos))
+        .then(() => Device.findOne({ where: { name }, include: [{ model: Video }] }))
+        .then(device => expect(device.videos).toHaveLength(2))
+        .then(() => Device.findOne({ where: { name } }))
+        .then(device => device.setVideos())
+        .then(() => Device.findOne({ where: { name }, include: [{ model: Video }] }))
+        .then(device => expect(device.videos).toHaveLength(0))
+        .then(() => Promise.all([
+          Device.findOne({ where: { name } }),
+          Video.findOne({ where: { hash: hash1 } }),
+        ]))
+        .then(([device, video]) => device.addVideo(video))
+        .then(() => Device.findOne({ where: { name }, include: [{ model: Video }] }))
+        .then(device => expect(device.videos).toHaveLength(1))
+        .then(() => Promise.all([
+          Device.findOne({ where: { name } }),
+          Video.findOne({ where: { hash: hash1 } }),
+        ]))
+        .then(([device, video]) => device.addVideo(video))
+        .then(() => Device.findOne({ where: { name }, include: [{ model: Video }] }))
+        .then(device => expect(device.videos).toHaveLength(1))
+        .then(() => Promise.all([
+          Device.findOne({ where: { name } }),
+          Video.findOne({ where: { hash: hash2 } }),
+        ]))
+        .then(([device, video]) => device.addVideo(video))
+        .then(() => Device.findOne({ where: { name }, include: [{ model: Video }] }))
+        .then(device => expect(device.videos).toHaveLength(2))
+        .then(() => Promise.all([
+          Device.findOne({ where: { name } }),
+          Video.findOne({ where: { hash: hash2 } }),
+        ]))
+        .then(([device, video]) => device.removeVideo(video))
+        .then(() => Device.findOne({ where: { name }, include: [{ model: Video }] }))
+        .then(device => expect(device.videos).toHaveLength(1)));
     });
   });
 });
