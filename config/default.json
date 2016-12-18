@@ -1,10 +1,16 @@
 {
   "app": {
     "extension": {
-      "video": ".mp4",
-      "frame": ".png",
-      "frameThanks": ".png",
-      "watermark": ".png"
+      "video": {
+        "original": ".mp4",
+        "editedA": ".mp4",
+        "preview": ".jpg"
+      },
+      "location": {
+        "frame": ".png",
+        "frameThanks": ".png",
+        "watermark": ".png"
+      }
     },
 
     "location": {
@@ -74,6 +80,7 @@
       "folder": {
         "video": {
           "tmp": "app/video/tmp-original",
+
           "original": "app/video/original",
           "preview": "app/video/preview",
           "editedA": "app/video/edited-A"

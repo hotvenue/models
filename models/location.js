@@ -1,62 +1,9 @@
-import path from 'path';
 import config from 'config';
-import { upload } from 'hotvenue-utils/utils/cloud';
 
-import { isFileType } from '../utils/validators';
+import { urlAbsoluteFactory, urlRelativeFactory, fileHookFactory } from '../utils/models';
+import { isFileTypeFactory } from '../utils/validators';
 
 const thanksAdd = '-thanks';
-
-function isImageFactory(ext) {
-  return function isImage(filepath) {
-    isFileType(filepath, ext);
-  };
-}
-
-function imageHookFactory(location) {
-  return Promise.all(['frame', 'frameThanks', 'watermark'].map((what) => {
-    const nameAdd = what === 'frameThanks' ? thanksAdd : '';
-
-    if (location.changed(what)) {
-      const filepath = location[what];
-      const ext = path.extname(filepath);
-
-      return upload(filepath, `${config.get(`aws.s3.folder.location.tmp-${what}`)}/${location.id}${nameAdd || ''}${ext}`);
-    }
-
-    return true;
-  }));
-}
-
-function urlRelativeFactory(what, nameAdd) {
-  return function urlRelative() {
-    const file = `${config.get(`aws.s3.folder.location.${what}`)}/${this.id}${nameAdd || ''}`;
-    const files = {
-      original: `${file}${config.get(`app.extension.${what}`)}`,
-    };
-
-    Object.keys(config.get(`app.location.${what}.sizes`)).forEach((key) => {
-      files[key] = `${file}@${key}${config.get(`app.extension.${what}`)}`;
-    });
-
-    return files;
-  };
-}
-
-function urlAbsoluteFactory(what) {
-  return function urlAbsolute() {
-    const urls = {};
-
-    Object.keys(this[what]).forEach((size) => {
-      urls[size] = [
-        `https://s3-${config.get('aws.region')}.amazonaws.com`,
-        config.get('aws.s3.bucket'),
-        this[what][size],
-      ].join('/');
-    });
-
-    return urls;
-  };
-}
 
 export default function (sequelize, DataTypes) {
   return sequelize.define('location', {
@@ -69,21 +16,21 @@ export default function (sequelize, DataTypes) {
     frame: {
       type: DataTypes.VIRTUAL,
       validate: {
-        isValidImage: isImageFactory(config.get('app.extension.frame')),
+        isValidImage: isFileTypeFactory(config.get('app.extension.location.frame')),
       },
     },
 
     frameThanks: {
       type: DataTypes.VIRTUAL,
       validate: {
-        isValidImage: isImageFactory(config.get('app.extension.frameThanks')),
+        isValidImage: isFileTypeFactory(config.get('app.extension.location.frameThanks')),
       },
     },
 
     watermark: {
       type: DataTypes.VIRTUAL,
       validate: {
-        isValidImage: isImageFactory(config.get('app.extension.watermark')),
+        isValidImage: isFileTypeFactory(config.get('app.extension.location.watermark')),
       },
     },
 
@@ -120,7 +67,7 @@ export default function (sequelize, DataTypes) {
 
     urlFrameRelative: {
       type: DataTypes.VIRTUAL,
-      get: urlRelativeFactory.call(this, 'frame'),
+      get: urlRelativeFactory.call(this, 'location.frame'),
     },
 
     urlFrame: {
@@ -130,7 +77,7 @@ export default function (sequelize, DataTypes) {
 
     urlFrameThanksRelative: {
       type: DataTypes.VIRTUAL,
-      get: urlRelativeFactory.call(this, 'frameThanks', thanksAdd),
+      get: urlRelativeFactory.call(this, 'location.frameThanks', thanksAdd),
     },
 
     urlFrameThanks: {
@@ -140,7 +87,7 @@ export default function (sequelize, DataTypes) {
 
     urlWatermarkRelative: {
       type: DataTypes.VIRTUAL,
-      get: urlRelativeFactory.call(this, 'watermark'),
+      get: urlRelativeFactory.call(this, 'location.watermark'),
     },
 
     urlWatermark: {
@@ -163,9 +110,9 @@ export default function (sequelize, DataTypes) {
     },
 
     hooks: {
-      afterCreate: imageHookFactory,
-      afterUpdate: imageHookFactory,
-      afterSave: imageHookFactory,
+      afterCreate: fileHookFactory('location', ['frame', 'frameThanks', 'watermark'], { frameThanks: thanksAdd }),
+      afterUpdate: fileHookFactory('location', ['frame', 'frameThanks', 'watermark'], { frameThanks: thanksAdd }),
+      afterSave: fileHookFactory('location', ['frame', 'frameThanks', 'watermark'], { frameThanks: thanksAdd }),
     },
   });
 }

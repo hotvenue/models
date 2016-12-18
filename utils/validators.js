@@ -24,3 +24,9 @@ export function isFileType(filepath, ext) {
     throw new Error(`The file provided is not a "${ext}" file`);
   }
 }
+
+export function isFileTypeFactory(ext) {
+  return function isFileTypeInstance(filepath) {
+    isFileType(filepath, ext);
+  };
+}
