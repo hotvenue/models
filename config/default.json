@@ -1,6 +1,7 @@
 {
   "app": {
     "extension": {
+      "video": ".mp4",
       "frame": ".png",
       "frameThanks": ".png",
       "watermark": ".png"

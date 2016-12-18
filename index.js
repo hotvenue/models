@@ -40,6 +40,7 @@ Object.keys(models)
 const Device = models.device;
 const Location = models.location;
 const User = models.user;
+const Video = models.video;
 
 export {
   Sequelize,
@@ -48,4 +49,5 @@ export {
   Device,
   Location,
   User,
+  Video,
 };
