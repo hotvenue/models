@@ -52,7 +52,7 @@ export default function (sequelize, DataTypes) {
       associate(models) {
         models.video.belongsTo(models.user);
         models.video.belongsTo(models.device);
-        // models.video.belongsTo(models.location);
+        models.video.belongsTo(models.location);
       },
     },
   });

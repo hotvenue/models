@@ -158,7 +158,7 @@ export default function (sequelize, DataTypes) {
     classMethods: {
       associate(models) {
         models.location.hasMany(models.device);
-        // models.location.hasMany(models.video);
+        models.location.hasMany(models.video);
       },
     },
 

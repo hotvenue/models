@@ -2,7 +2,7 @@ import path from 'path';
 import config from 'config';
 import { check, destroy } from 'hotvenue-utils/utils/cloud';
 
-import { sequelize, Location, Device } from '../../index';
+import { sequelize, Location, Device, Video } from '../../index';
 
 describe('Location', () => {
   describe('Class', () => {
@@ -402,9 +402,14 @@ describe('Location', () => {
       const nameA = 'Device A';
       const nameB = 'Device B';
 
+      const hash1 = '1234';
+      const hash2 = '5678';
+
       beforeEach(() => Promise.all([
         Device.create({ name: nameA }),
         Device.create({ name: nameB }),
+        Video.create({ hash: hash1 }),
+        Video.create({ hash: hash2 }),
       ]));
 
       it('should add the two devices to the location', () => Promise.all([
@@ -434,6 +439,46 @@ describe('Location', () => {
         .then(location => expect(location.devices).toHaveLength(2))
         .then(() => Device.findOne({ where: { name: nameA } }))
         .then(device => expect(device.locationId).toBeDefined()));
+
+      it('should have an associated "Video"', () => Promise.all([
+        Location.findOne({ where: { name } }),
+        Video.findAll(),
+      ])
+        .then(([location, videos]) => location.setVideos(videos))
+        .then(() => Location.findOne({ where: { name }, include: [{ model: Video }] }))
+        .then(location => expect(location.videos).toHaveLength(2))
+        .then(() => Location.findOne({ where: { name } }))
+        .then(location => location.setVideos())
+        .then(() => Location.findOne({ where: { name }, include: [{ model: Video }] }))
+        .then(location => expect(location.videos).toHaveLength(0))
+        .then(() => Promise.all([
+          Location.findOne({ where: { name } }),
+          Video.findOne({ where: { hash: hash1 } }),
+        ]))
+        .then(([location, video]) => location.addVideo(video))
+        .then(() => Location.findOne({ where: { name }, include: [{ model: Video }] }))
+        .then(location => expect(location.videos).toHaveLength(1))
+        .then(() => Promise.all([
+          Location.findOne({ where: { name } }),
+          Video.findOne({ where: { hash: hash1 } }),
+        ]))
+        .then(([location, video]) => location.addVideo(video))
+        .then(() => Location.findOne({ where: { name }, include: [{ model: Video }] }))
+        .then(location => expect(location.videos).toHaveLength(1))
+        .then(() => Promise.all([
+          Location.findOne({ where: { name } }),
+          Video.findOne({ where: { hash: hash2 } }),
+        ]))
+        .then(([location, video]) => location.addVideo(video))
+        .then(() => Location.findOne({ where: { name }, include: [{ model: Video }] }))
+        .then(location => expect(location.videos).toHaveLength(2))
+        .then(() => Promise.all([
+          Location.findOne({ where: { name } }),
+          Video.findOne({ where: { hash: hash2 } }),
+        ]))
+        .then(([location, video]) => location.removeVideo(video))
+        .then(() => Location.findOne({ where: { name }, include: [{ model: Video }] }))
+        .then(location => expect(location.videos).toHaveLength(1)));
     });
 
     describe('Files', () => {
