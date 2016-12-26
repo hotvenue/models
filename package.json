@@ -1,6 +1,6 @@
 {
   "name": "hotvenue-models",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Business models for the HotVenue app",
   "main": "index.js",
   "scripts": {

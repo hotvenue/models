@@ -10,7 +10,7 @@ const sequelize = new Sequelize(
   config.has('database.password') ? config.get('database.password') : null,
   {
     ...config.get('database'),
-    logging: config.get('database') ? log.db.debug : false,
+    logging: config.get('database.logging') ? log.db.debug : false,
   },
 );
 
